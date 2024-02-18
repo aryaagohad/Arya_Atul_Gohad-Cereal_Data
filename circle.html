@@ -1,0 +1,76 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rating Analysis of 80 Cereals</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script> 
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #chart-container {
+      text-align: center; 
+    }
+  </style>
+</head>
+<body>
+  <svg width="800" height="800"></svg> 
+  <script>
+    // Setting up the SVG 
+    const svg = d3.select("svg"),//Selects the SVG element created in the HTML and assigns it to the svg variable
+          width = +svg.attr("width"),
+          height = +svg.attr("height"),
+          format = d3.format(",d"), // Creates a number format function that formats numbers with commas 
+          color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    // Creating the pack layout
+    const pack = data => d3.pack() //Defines a function named pack that creates a circle packing layout.
+      .size([width, height])
+      .padding(30)
+      (d3.hierarchy({children: data}) // Constructs a hierarchy of data with a root node and child nodes, where data is the input data and d => d.value defines how to sum the values of child nodes.
+      .sum(d => d.value));
+
+    // Loading the CSV data
+    d3.csv("cereal.csv").then(data => { //Specifies a callback function to be executed after the data is successfully loaded.
+      data.forEach(d => { //Converts the value property of each data point from string to number.
+        d.value = +d.value;
+      });
+
+      // Creating the circle packing layout
+      const root = pack(data); //Creates the circle packing layout using the loaded data, which is stored in the
+
+      // Creating circles
+      const node = svg.selectAll("g")
+        .data(root.descendants().slice(1))
+        .enter().append("g")
+        .attr("transform", d => `translate(${d.x},${d.y})`);
+
+        const customColors = d3.scaleOrdinal()
+        .domain(data.map(d => d.category))
+        .range(["#C4A484", "#964B00"]); // Customised colours 
+
+      node.append("circle")
+        .attr("r", d => d.r*1.2) //changes the size of the circles by increasing the radius 
+        .attr("fill", d => customColors(d.data.category)); //Sets the fill color of each circle based on its category using the custom color scale
+
+      node.filter(d => !d.children) //Filters the selection to include only leaf nodes (nodes without children)
+        .append("text")
+        .attr("dy", "0.3em") //Sets the vertical alignment of the text to be slightly above the center of the circle.
+        .attr("text-anchor", "middle") 
+        .text(d => d.data.name.substring(0, d.r / 3)); //Sets the text content of each text element to be a substring of the name property of the data point. The substring is taken from the beginning of the name and its length is one-third of the radius of the circle.
+        //The above line is where the code must be MODIFIED to wrap the entire text WITHIN the circle 
+
+      // Adding a tooltip
+      node.append("title")
+        .text(d => `${d.data.name}\n${format(d.value)}`);
+    }).catch(error => {
+      throw error;
+    });
+  </script>
+</body>
+</html>

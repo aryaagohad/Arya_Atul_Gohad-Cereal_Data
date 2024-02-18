@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title> D3.js First</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.js" integrity="sha512-NmSTfudjn1FCaFMQ+f4xveBmwRJn5ep8Wu+YOeq+CeExhFtKvwhfKVXFX3tGxoGWxu8Fl83qm9nE8/Hkc1dWZg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div id ="chart"></div>
+
+    <script>
+        const svg = d3.select("#chart") // d3 is taken from the script tag referenced above 
+        .append ("svg") // creates a canvas of sorts 
+        .attr ('width', 640) // changes to the background or foreground 
+        .attr ('height',480) // defines the perimeter where the chart would be displayed 
+
+        svg. selectAll()
+        .data(d3.range(10)) //d=data; d's value ranges from 0 to 9 -> array 
+        .join("circle") // join operation: for the data obtained in the previous line: returns numbers from 0-9 :: you get 10 circles in the output 
+        .attr('cx', d=>30 +d *50) //first circles is 30 px from the left edge, every consequent circle is placed 50px to the right ; positioning on the x-axis 
+        .attr('cy', 120) // positioning on the y-axis 
+        .attr('r', d=> Math.random()*20) // math.random value ranges between 0 and 1 
+        .attr('fill', 'black') // colour fill of the circle 
+    </script> 
+
+</body>
+</html>
